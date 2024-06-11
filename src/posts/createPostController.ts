@@ -3,15 +3,13 @@ import { PostInputModel, PostDbType } from "../input-output-types/posts-type";
 import { postCollection, blogCollection } from "../db/mongo-db";
 import { ObjectId } from "mongodb";
 
-const createDate = new Date().toISOString();
-
 export const createPostController = async (
   req: Request<any, any, PostInputModel>,
   res: Response<any>
 ) => {
   const id = new ObjectId(req.body.blogId);
   const bi = await blogCollection.findOne({ _id: id });
-
+  const createDate = new Date().toISOString();
   const newPost: PostDbType = {
     // id: Date.now().toString(),
     title: req.body.title,
@@ -34,6 +32,6 @@ export const createPostController = async (
     };
     res.status(201).json(z);
   } else {
-    return;
+    res.sendStatus(500);
   }
 };

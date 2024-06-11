@@ -18,7 +18,11 @@ describe("/blogs", () => {
 
   it("should create", async () => {
     await blogCollection.drop();
-    const newBlog = {};
+    const newBlog: BlogInputModel = {
+      name: "string",
+      description: "string",
+      websiteUrl: "https://YUISbofyirb6dFmevNl151zv",
+    };
 
     const res = await req
       .post(SETTINGS.PATH.BLOGS)

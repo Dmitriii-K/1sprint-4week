@@ -15,7 +15,7 @@ export const SETTINGS = {
     POSTS: "/posts",
     TESTING: "/testing",
   },
-  ADMIN: process.env.ADMIN || "admin:qwerty",
+  ADMIN: process.env.ADMIN || "",
   MONGO_URL: process.env.MONGO_URL || "mongodb://0.0.0.0:27017",
   BLOG_COLLECTION_NAME: process.env.BLOG_COLLECTION_NAME || "",
   POST_COLLECTION_NAME: process.env.POST_COLLECTION_NAME || "",

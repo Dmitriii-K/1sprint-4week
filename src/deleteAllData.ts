@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Router } from "express";
-import { dbBlog, dbPost } from "./db/db";
 import { blogCollection, postCollection } from "./db/mongo-db";
 
 export const deleteRouter = Router();

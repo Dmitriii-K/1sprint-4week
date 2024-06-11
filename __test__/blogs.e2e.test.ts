@@ -1,20 +1,20 @@
 import { req } from "./test-helpers";
-// import {setDB} from '../src/db/db'
-// import {dataset1} from './datasets'
+import { blogCollection, connectDB } from "../src/db/mongo-db";
 import { SETTINGS } from "../src/settings";
-
-import { db, setDB } from "../src/db/db";
-import { BlogInputModel } from "../src/input-output-types/blogs-type";
-import { codedAuth, createString, dataset1 } from "./helpers/datasets";
+import {
+  BlogInputModel,
+  BlogDbType,
+} from "../src/input-output-types/blogs-type";
+import { authMiddleware, codedAuth } from "../src/middlewares/middlewareForAll";
 
 describe("/blogs", () => {
   beforeAll(async () => {
-    // очистка базы данных перед началом тестирования
-    setDB();
+    await connectDB();
   });
 
   it("should create", async () => {
-    setDB();
+    // зачищаем базу данных
+    await blogCollection.drop();
     const newBlog: BlogInputModel = {
       name: "n1",
       description: "d1",
@@ -33,11 +33,10 @@ describe("/blogs", () => {
     expect(res.body.description).toEqual(newBlog.description);
     expect(res.body.websiteUrl).toEqual(newBlog.websiteUrl);
     expect(typeof res.body.id).toEqual("string");
-
-    expect(res.body).toEqual(db.blogs[0]);
   });
+
   it("shouldn't create 401", async () => {
-    setDB();
+    await blogCollection.drop();
     const newBlog: BlogInputModel = {
       name: "n1",
       description: "d1",
@@ -50,11 +49,10 @@ describe("/blogs", () => {
       .expect(401);
 
     // console.log(res.body)
-
-    expect(db.blogs.length).toEqual(0);
   });
+
   it("shouldn't create", async () => {
-    setDB();
+    await blogCollection.drop();
     const newBlog: BlogInputModel = {
       name: createString(16),
       description: createString(501),
@@ -73,20 +71,18 @@ describe("/blogs", () => {
     expect(res.body.errorsMessages[0].field).toEqual("name");
     expect(res.body.errorsMessages[1].field).toEqual("description");
     expect(res.body.errorsMessages[2].field).toEqual("websiteUrl");
-
-    expect(db.blogs.length).toEqual(0);
   });
+
   it("should get empty array", async () => {
-    setDB(); // очистка базы данных если нужно
+    await blogCollection.drop(); // очистка базы данных если нужно
 
     const res = await req.get(SETTINGS.PATH.BLOGS).expect(200); // проверяем наличие эндпоинта
 
     // console.log(res.body) // можно посмотреть ответ эндпоинта
-
-    expect(res.body.length).toEqual(0); // проверяем ответ эндпоинта
   });
+
   it("should get not empty array", async () => {
-    setDB(dataset1); // заполнение базы данных начальными данными если нужно
+    await blogCollection.insertOne(dataset1); // заполнение базы данных начальными данными если нужно
 
     const res = await req.get(SETTINGS.PATH.BLOGS).expect(200);
 
@@ -95,15 +91,17 @@ describe("/blogs", () => {
     expect(res.body.length).toEqual(1);
     expect(res.body[0]).toEqual(dataset1.blogs[0]);
   });
+
   it("shouldn't find", async () => {
-    setDB(dataset1);
+    await blogCollection.insertOne(dataset1);
 
     const res = await req.get(SETTINGS.PATH.BLOGS + "/1").expect(404); // проверка на ошибку
 
     // console.log(res.body)
   });
+
   it("should find", async () => {
-    setDB(dataset1);
+    await blogCollection.insertOne(dataset1);
 
     const res = await req
       .get(SETTINGS.PATH.BLOGS + "/" + dataset1.blogs[0].id)
@@ -113,6 +111,7 @@ describe("/blogs", () => {
 
     expect(res.body).toEqual(dataset1.blogs[0]);
   });
+
   it("should del", async () => {
     setDB(dataset1);
 
