@@ -26,3 +26,11 @@ export type PostDbType = {
   blogName: string;
   createdAt: string;
 };
+
+export type PaginatorPostViewModel = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: PostViewModel;
+};

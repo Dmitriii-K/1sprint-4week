@@ -22,3 +22,11 @@ export type BlogInputModel = {
   description: string;
   websiteUrl: string;
 };
+
+export type PaginatorBlogViewModel = {
+  pagesCount: number;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  items: BlogViewModel;
+};

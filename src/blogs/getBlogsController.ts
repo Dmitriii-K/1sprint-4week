@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BlogViewModel, BlogDbType } from "../input-output-types/blogs-type";
+import { BlogViewModel, BlogDbType, PaginatorBlogViewModel } from "../input-output-types/blogs-type";
 import { SortDirection } from "../input-output-types/enyType";
 import { blogCollection } from "../db/mongo-db";
 import { WithId } from "mongodb";

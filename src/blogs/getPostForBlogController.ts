@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PostViewModel, PostDbType } from "../input-output-types/posts-type";
+import { PostViewModel, PostDbType, PaginatorPostViewModel } from "../input-output-types/posts-type";
 import { SortDirection } from "../input-output-types/enyType";
 import { postCollection } from "../db/mongo-db";
 import { WithId } from "mongodb";
@@ -16,7 +16,7 @@ export const getPostForBlogController = async (
     const postForBlog = posts.map(postsMap);
     res.status(200).json(postForBlog);
   } catch (error) {
-    res.sendStatus(500);
+    console.error(error);
   }
 };
 

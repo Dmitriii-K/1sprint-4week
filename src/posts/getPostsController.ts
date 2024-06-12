@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PostDbType, PostViewModel } from "../input-output-types/posts-type";
+import { PostDbType, PostViewModel, PaginatorPostViewModel } from "../input-output-types/posts-type";
 import { SortDirection } from "../input-output-types/enyType";
 import { postCollection } from "../db/mongo-db";
 import { WithId } from "mongodb";
