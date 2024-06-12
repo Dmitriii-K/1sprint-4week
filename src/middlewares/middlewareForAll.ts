@@ -1,5 +1,5 @@
 import { Router, Response, Request, NextFunction } from "express";
-import { body, validationResult } from "express-validator";
+import { body, validationResult, query, param } from "express-validator";
 import { SETTINGS } from "../settings";
 import { blogCollection } from "../db/mongo-db";
 import { ObjectId } from "mongodb";
@@ -31,6 +31,41 @@ export const blogInputValidation = [
     .withMessage("not url")
     .isLength({ min: 1, max: 100 })
     .withMessage("более 100 символов"),
+];
+
+export const blogPostValidation = [
+  body("title")
+    .isString()
+    .trim()
+    .not()
+    .isEmpty()
+    .isLength({ max: 30 })
+    .withMessage("Заголовок слишком длинный"),
+  body("shortDescription")
+    .isString()
+    .trim()
+    .not()
+    .isEmpty()
+    .isLength({ max: 100 })
+    .withMessage("Описание превышает максимальное кол-во символов"),
+  body("content")
+    .isString()
+    .trim()
+    .not()
+    .isEmpty()
+    .isLength({ max: 1000 })
+    .withMessage("Содержание превышает максимальное кол-во символов"),
+];
+
+export const paginationWithSortingPost = [
+  query("pageNumber").isInt(),
+  query("pageSize").isInt(),
+  query("sortBy").isString(),
+  query("sortDirection").isString(),
+];
+export const paginationWithSortingBlog = [
+  paginationWithSortingPost,
+  query("searchNameTerm").isString(),
 ];
 
 export const postInputValidation = [

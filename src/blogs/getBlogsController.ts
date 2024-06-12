@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { BlogViewModel, BlogDbType } from "../input-output-types/blogs-type";
+import { SortDirection } from "../input-output-types/enyType";
 import { blogCollection } from "../db/mongo-db";
 import { WithId } from "mongodb";
 
@@ -22,3 +23,12 @@ export const getBlogsController = async (
   const outputBlogs = blogs.map(blogsMap);
   res.status(200).json(outputBlogs);
 };
+
+
+{
+  pageNumber: query.pageNumber ? +query.pageNumber : 1,
+  pageSize: query.pageSize !== undefined ? +query.pageSize : 10,
+  sortBy: query.sortBy ? query.sortBy : 'createdAt',
+  sortDirection: query.sortDirection ? query.sortDirection as SortDirection : 'desc',
+  searchNameTerm: query.searchNameTerm ? query.searchNameTerm : null,
+}

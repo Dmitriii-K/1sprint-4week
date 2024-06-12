@@ -6,13 +6,14 @@ import { updatePostController } from "./updatePostController";
 import { deletePostController } from "./deletePostController";
 import {
   postInputValidation,
+  paginationWithSortingPost,
   inputCheckErrorsMiddleware,
   authMiddleware,
 } from "../middlewares/middlewareForAll";
 
 export const postRouter = Router();
 
-postRouter.get("/", getPostsController);
+postRouter.get("/", paginationWithSortingPost, getPostsController);
 postRouter.post(
   "/",
   authMiddleware,
