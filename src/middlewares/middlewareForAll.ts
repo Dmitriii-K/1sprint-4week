@@ -154,3 +154,19 @@ export const authMiddleware = (
 };
 const buff2 = Buffer.from(SETTINGS.ADMIN, "utf8");
 export const codedAuth = buff2.toString("base64");
+
+const halper = (query: { [key: string]: string | undefined }) => {
+  return {
+    pageNumber: query.pageNumber ? +query.pageNumber : 1,
+    pageSize: query.pageSize !== undefined ? +query.pageSize : 10,
+    sortBy: query.sortBy ? query.sortBy : "createdAt",
+    sortDirection: query.sortDirection
+      ? (query.sortDirection as SortDirection)
+      : "desc",
+    searchNameTerm: query.searchNameTerm ? query.searchNameTerm : null,
+  };
+};
+
+export const sanitaizedQuery = halper(
+  req.query as { [key: string]: string | undefined }
+);

@@ -36,6 +36,6 @@ export const createPostForBlogController = async (
       res.sendStatus(500);
     }
   } catch (error) {
-    error;
+    console.log(error);
   }
 };
