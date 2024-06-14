@@ -11,6 +11,10 @@ export const createPostForBlogController = async (
   try {
     const id = new ObjectId(req.params.id);
     const nameBlogForPost = await blogCollection.findOne({ _id: id });
+    if (!nameBlogForPost) {
+      res.sendStatus(404);
+      return;
+    }
     const createDate = new Date().toISOString();
     const newPost: PostDbType = {
       title: req.body.title,

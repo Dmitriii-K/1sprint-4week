@@ -27,15 +27,15 @@ export const getBlogsController = async (
   //const {pageNumber, pagesCount} = req.query
   const queryParams = halper(req.query);
   const search = req.query.searchNameTerm
-    ? { title: { $regex: req.query.searchNameTerm, $options: "i" } }
+    ? { name: { $regex: req.query.searchNameTerm, $options: "i" } }
     : {};
   try {
-    const items: WithId<BlogDbType>[] = (await blogCollection
+    const items: WithId<BlogDbType>[] = await blogCollection
       .find(search)
       .sort(queryParams.sortBy, queryParams.sortDirection)
       .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
       .limit(queryParams.pageSize)
-      .toArray()) as any[];
+      .toArray();
     const totalCount = await blogCollection.countDocuments(search);
     const newBlog = {
       pagesCount: Math.ceil(totalCount / queryParams.pageSize),

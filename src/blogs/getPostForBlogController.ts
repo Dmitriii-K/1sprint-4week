@@ -16,15 +16,19 @@ export const getPostForBlogController = async (
   req: Request<BlgId, any, any, TypePostForBlogHalper>,
   res: Response<PaginatorPostViewModel>
 ) => {
-  const id = req.params.id;
-  const queryParams = halper(req.query);
   try {
+    const id = req.params.id;
+
+    const queryParams = halper(req.query);
     const items: WithId<PostDbType>[] = await postCollection
       .find({ blogId: id })
       .sort(queryParams.sortBy, queryParams.sortDirection)
       .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
       .limit(queryParams.pageSize)
       .toArray();
+    if (items.length < 1) {
+      res.sendStatus(404);
+    }
     const totalCount = await postCollection.countDocuments({ blogId: id });
     const newPost = {
       pagesCount: Math.ceil(totalCount / queryParams.pageSize),
