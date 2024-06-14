@@ -8,3 +8,7 @@ export type BlogPostInputModel = {
   shortDescription: string;
   content: string;
 };
+
+export type BlgId = {
+  id: string;
+};

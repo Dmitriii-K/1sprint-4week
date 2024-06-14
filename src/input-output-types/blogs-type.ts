@@ -28,5 +28,19 @@ export type PaginatorBlogViewModel = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: BlogViewModel;
+  items: BlogViewModel[];
+};
+
+export type TypeBlogHalper = {
+  searchNameTerm: string;
+  sortBy: string;
+  sortDirection: string;
+  pageNumber: number;
+  pageSize: number;
+};
+export type TypePostForBlogHalper = {
+  sortBy: string;
+  sortDirection: string;
+  pageNumber: number;
+  pageSize: number;
 };

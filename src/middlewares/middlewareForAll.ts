@@ -3,6 +3,7 @@ import { body, validationResult, query, param } from "express-validator";
 import { SETTINGS } from "../settings";
 import { blogCollection } from "../db/mongo-db";
 import { ObjectId } from "mongodb";
+import { SortDirection } from "../input-output-types/eny-type";
 
 const urlPattern =
   /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
@@ -57,16 +58,16 @@ export const blogPostValidation = [
     .withMessage("Содержание превышает максимальное кол-во символов"),
 ];
 
-export const paginationWithSortingPost = [
-  query("pageNumber").isInt(),
-  query("pageSize").isInt(),
-  query("sortBy").isString(),
-  query("sortDirection").isString(),
-];
-export const paginationWithSortingBlog = [
-  paginationWithSortingPost,
-  query("searchNameTerm").isString(),
-];
+// export const paginationWithSortingPost = [
+//   query("pageNumber").isInt(),
+//   query("pageSize").isInt(),
+//   query("sortBy").isString(),
+//   query("sortDirection").isString(),
+// ];
+// export const paginationWithSortingBlog = [
+//   paginationWithSortingPost,
+//   query("searchNameTerm").isString(),
+// ];
 
 export const postInputValidation = [
   body("title")
@@ -155,7 +156,9 @@ export const authMiddleware = (
 const buff2 = Buffer.from(SETTINGS.ADMIN, "utf8");
 export const codedAuth = buff2.toString("base64");
 
-const halper = (query: { [key: string]: string | undefined }) => {
+export const halper = (query: {
+  [key: string]: string | number | undefined;
+}): any => {
   return {
     pageNumber: query.pageNumber ? +query.pageNumber : 1,
     pageSize: query.pageSize !== undefined ? +query.pageSize : 10,
@@ -167,6 +170,6 @@ const halper = (query: { [key: string]: string | undefined }) => {
   };
 };
 
-export const sanitaizedQuery = halper(
-  req.query as { [key: string]: string | undefined }
-);
+// export const sanitaizedQuery = halper(
+//   req.query as { [key: string]: string | undefined }
+// );

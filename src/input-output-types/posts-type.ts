@@ -32,5 +32,12 @@ export type PaginatorPostViewModel = {
   page: number;
   pageSize: number;
   totalCount: number;
-  items: PostViewModel;
+  items: PostViewModel[];
+};
+
+export type TypePostHalper = {
+  sortBy: string;
+  sortDirection: string;
+  pageNumber: number;
+  pageSize: number;
 };

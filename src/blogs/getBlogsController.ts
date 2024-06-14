@@ -4,9 +4,10 @@ import {
   BlogDbType,
   PaginatorBlogViewModel,
 } from "../input-output-types/blogs-type";
-import { SortDirection } from "../input-output-types/enyType";
+import { TypeBlogHalper } from "../input-output-types/blogs-type";
 import { blogCollection } from "../db/mongo-db";
 import { WithId } from "mongodb";
+import { halper } from "../middlewares/middlewareForAll";
 
 export const blogsMap = (blog: WithId<BlogDbType>): BlogViewModel => {
   return {
@@ -20,43 +21,33 @@ export const blogsMap = (blog: WithId<BlogDbType>): BlogViewModel => {
 };
 
 export const getBlogsController = async (
-  req: Request<PaginatorBlogViewModel>,
-  res: Response<BlogViewModel[]>
+  req: Request<any, any, any, TypeBlogHalper>,
+  res: Response<PaginatorBlogViewModel>
 ) => {
-  const search = query.searchNameTerm
-    ? { title: { $regex: query.searchNameTerm, $options: "i" } }
+  //const {pageNumber, pagesCount} = req.query
+  const queryParams = halper(req.query);
+  const search = req.query.searchNameTerm
+    ? { title: { $regex: req.query.searchNameTerm, $options: "i" } }
     : {};
   try {
-    const blogs: WithId<BlogDbType>[] = (await blogCollection
-      .find({})
-      .sort(query.sortBy, query.sortDirection)
-      .skip((query.pageNumber - 1) * query.pageSize)
-      .limit(query.pageSize)
+    const items: WithId<BlogDbType>[] = (await blogCollection
+      .find(search)
+      .sort(queryParams.sortBy, queryParams.sortDirection)
+      .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
+      .limit(queryParams.pageSize)
       .toArray()) as any[];
-    const totalCount = await blogCollection.countDocuments({});
-    return {
-      pagesCount: Math.ceil(totalCount / query.pageSize),
-      page: query.pageNumber,
-      pageSize: query.pageSize,
+    const totalCount = await blogCollection.countDocuments(search);
+    const newBlog = {
+      pagesCount: Math.ceil(totalCount / queryParams.pageSize),
+      page: queryParams.pageNumber,
+      pageSize: queryParams.pageSize,
       totalCount,
-      items: items.map(this.mapToOutput),
+      items: items.map(blogsMap),
     };
-    const outputBlogs = blogs.map(blogsMap);
-    res.status(200).json(outputBlogs);
+    res.status(200).json(newBlog);
+    return;
   } catch (e) {
     console.log(e);
     return { error: "some error" };
   }
-};
-
-const halper = (query: { [key: string]: string | undefined }) => {
-  return {
-    pageNumber: query.pageNumber ? +query.pageNumber : 1,
-    pageSize: query.pageSize !== undefined ? +query.pageSize : 10,
-    sortBy: query.sortBy ? query.sortBy : "createdAt",
-    sortDirection: query.sortDirection
-      ? (query.sortDirection as SortDirection)
-      : "desc",
-    searchNameTerm: query.searchNameTerm ? query.searchNameTerm : null,
-  };
 };

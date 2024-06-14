@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BlogPostInputModel } from "../input-output-types/enyType";
+import { BlogPostInputModel } from "../input-output-types/eny-type";
 import { PostDbType } from "../input-output-types/posts-type";
 import { postCollection, blogCollection } from "../db/mongo-db";
 import { ObjectId } from "mongodb";

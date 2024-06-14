@@ -3,10 +3,11 @@ import {
   PostDbType,
   PostViewModel,
   PaginatorPostViewModel,
+  TypePostHalper,
 } from "../input-output-types/posts-type";
-import { SortDirection } from "../input-output-types/enyType";
 import { postCollection } from "../db/mongo-db";
 import { WithId } from "mongodb";
+import { halper } from "../middlewares/middlewareForAll";
 
 export const postsMap = (post: WithId<PostDbType>): PostViewModel => {
   return {
@@ -21,21 +22,31 @@ export const postsMap = (post: WithId<PostDbType>): PostViewModel => {
 };
 
 export const getPostsController = async (
-  req: Request,
-  res: Response<PostViewModel[]>
+  req: Request<any, any, any, TypePostHalper>,
+  res: Response<PaginatorPostViewModel>
 ) => {
-  const posts: WithId<PostDbType>[] = await postCollection.find({}).toArray();
-  const outputPosts = posts.map(postsMap);
-  res.status(200).json(outputPosts);
-};
-
-const halper = (query: { [key: string]: string | undefined }) => {
-  return {
-    pageNumber: query.pageNumber ? +query.pageNumber : 1,
-    pageSize: query.pageSize !== undefined ? +query.pageSize : 10,
-    sortBy: query.sortBy ? query.sortBy : "createdAt",
-    sortDirection: query.sortDirection
-      ? (query.sortDirection as SortDirection)
-      : "desc",
-  };
+  const queryParams = halper(req.query);
+  try {
+    const items: WithId<PostDbType>[] = (await postCollection
+      .find({})
+      .sort(queryParams.sortBy, queryParams.sortDirection)
+      .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
+      .limit(queryParams.pageSize)
+      .toArray()) as any[];
+    const totalCount = await postCollection.countDocuments({});
+    const newPost = {
+      pagesCount: Math.ceil(totalCount / queryParams.pageSize),
+      page: queryParams.pageNumber,
+      pageSize: queryParams.pageSize,
+      totalCount,
+      items: items.map(postsMap),
+    };
+    res.status(200).json(newPost);
+    return;
+    // const outputPosts = posts.map(postsMap);
+    // res.status(200).json(outputPosts);
+  } catch (e) {
+    console.log(e);
+    return { error: "some error" };
+  }
 };
