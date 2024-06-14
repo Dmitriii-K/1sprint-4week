@@ -16,19 +16,16 @@ export const getPostForBlogController = async (
   req: Request<BlgId, any, any, TypePostForBlogHalper>,
   res: Response<PaginatorPostViewModel>
 ) => {
-  const id = new ObjectId(req.params.id);
-
-  const byId = id ? { id: new ObjectId(id) } : {};
-
+  const id = req.params.id;
   const queryParams = halper(req.query);
   try {
-    const items: WithId<PostDbType>[] = (await postCollection
-      .find({ byId })
+    const items: WithId<PostDbType>[] = await postCollection
+      .find({ blogId: id })
       .sort(queryParams.sortBy, queryParams.sortDirection)
       .skip((queryParams.pageNumber - 1) * queryParams.pageSize)
       .limit(queryParams.pageSize)
-      .toArray()) as any[];
-    const totalCount = await postCollection.countDocuments(byId);
+      .toArray();
+    const totalCount = await postCollection.countDocuments({ blogId: id });
     const newPost = {
       pagesCount: Math.ceil(totalCount / queryParams.pageSize),
       page: queryParams.pageNumber,
@@ -36,7 +33,6 @@ export const getPostForBlogController = async (
       totalCount,
       items: items.map(postsMap),
     };
-    // const postForBlog = posts.map(postsMap);
     res.status(200).json(newPost);
   } catch (error) {
     console.log(error);
