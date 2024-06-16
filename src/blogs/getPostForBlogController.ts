@@ -18,7 +18,6 @@ export const getPostForBlogController = async (
 ) => {
   try {
     const id = req.params.id;
-
     const queryParams = halper(req.query);
     const items: WithId<PostDbType>[] = await postCollection
       .find({ blogId: id })
@@ -28,6 +27,7 @@ export const getPostForBlogController = async (
       .toArray();
     if (items.length < 1) {
       res.sendStatus(404);
+      return;
     }
     const totalCount = await postCollection.countDocuments({ blogId: id });
     const newPost = {

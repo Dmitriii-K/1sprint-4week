@@ -43,8 +43,6 @@ export const getPostsController = async (
     };
     res.status(200).json(newPost);
     return;
-    // const outputPosts = posts.map(postsMap);
-    // res.status(200).json(outputPosts);
   } catch (e) {
     console.log(e);
     return { error: "some error" };

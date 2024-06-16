@@ -7,31 +7,34 @@ export const createPostController = async (
   req: Request<any, any, PostInputModel>,
   res: Response<any>
 ) => {
-  const id = new ObjectId(req.body.blogId);
-  const bi = await blogCollection.findOne({ _id: id });
-  const createDate = new Date().toISOString();
-  const newPost: PostDbType = {
-    // id: Date.now().toString(),
-    title: req.body.title,
-    shortDescription: req.body.shortDescription,
-    content: req.body.content,
-    blogId: req.body.blogId,
-    blogName: bi!.name,
-    createdAt: createDate,
-  };
-  const cp = await postCollection.insertOne(newPost);
-  if (cp) {
-    const z = {
+  try {
+    const id = new ObjectId(req.body.blogId);
+    const findBlogNameForId = await blogCollection.findOne({ _id: id });
+    const createDate = new Date().toISOString();
+    const newPost: PostDbType = {
       title: req.body.title,
       shortDescription: req.body.shortDescription,
       content: req.body.content,
       blogId: req.body.blogId,
-      blogName: bi!.name,
+      blogName: findBlogNameForId!.name,
       createdAt: createDate,
-      id: cp.insertedId,
     };
-    res.status(201).json(z);
-  } else {
-    res.sendStatus(500);
+    const newPostDB = await postCollection.insertOne(newPost);
+    if (newPostDB) {
+      const mapPostDB = {
+        title: req.body.title,
+        shortDescription: req.body.shortDescription,
+        content: req.body.content,
+        blogId: req.body.blogId,
+        blogName: findBlogNameForId!.name,
+        createdAt: createDate,
+        id: newPostDB.insertedId,
+      };
+      res.status(201).json(mapPostDB);
+    } else {
+      res.sendStatus(500);
+    }
+  } catch (error) {
+    console.log(error);
   }
 };

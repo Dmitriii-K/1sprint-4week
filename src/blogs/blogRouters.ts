@@ -10,23 +10,13 @@ import {
   authMiddleware,
   blogInputValidation,
   blogPostValidation,
-  // paginationWithSortingPost,
-  // paginationWithSortingBlog,
   inputCheckErrorsMiddleware,
 } from "../middlewares/middlewareForAll";
 
 export const blogRouter = Router();
 
-blogRouter.get(
-  "/",
-  // paginationWithSortingBlog,
-  getBlogsController
-);
-blogRouter.get(
-  "/:id/posts",
-  // paginationWithSortingPost,
-  getPostForBlogController
-);
+blogRouter.get("/", getBlogsController);
+blogRouter.get("/:id/posts", getPostForBlogController);
 blogRouter.post(
   "/",
   authMiddleware,

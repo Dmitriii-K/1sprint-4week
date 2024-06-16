@@ -1,4 +1,4 @@
-import { Router, Response, Request, NextFunction } from "express";
+import { Response, Request, NextFunction } from "express";
 import { body, validationResult, query, param } from "express-validator";
 import { SETTINGS } from "../settings";
 import { blogCollection } from "../db/mongo-db";
@@ -169,7 +169,3 @@ export const halper = (query: {
     searchNameTerm: query.searchNameTerm ? query.searchNameTerm : null,
   };
 };
-
-// export const sanitaizedQuery = halper(
-//   req.query as { [key: string]: string | undefined }
-// );
